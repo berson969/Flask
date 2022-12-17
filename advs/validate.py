@@ -1,10 +1,10 @@
 from typing import Type
 
-from pydantic import BaseModel, EmailStr, ValidationError, ArbitraryTypeError
+from pydantic import BaseModel, EmailStr, ValidationError
 from flask_bcrypt import Bcrypt
 
-from advs.adv import get_app
-from advs.errors import ApiError
+from adv import get_app
+from errors import ApiError
 
 bcrypt = Bcrypt(get_app())
 
@@ -42,4 +42,3 @@ def check_password(
     password: str,
 ) -> bool:
     return bcrypt.check_password_hash(password_hash.encode(), password.encode())
-

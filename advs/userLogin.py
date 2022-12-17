@@ -1,6 +1,6 @@
 from flask_login import UserMixin
 
-from advs.errors import ApiError
+from errors import ApiError
 
 
 class UserLogin(UserMixin):

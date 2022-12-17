@@ -3,17 +3,20 @@ version: "3.9"
 volumes:
   pgdata:
 
+networks:
+      dev_network:
+
 services:
-  postgresql:
+  postgres:
     image: postgres:15.1-alpine
     container_name: flask_db
     ports:
       - "5431:5432"
     restart: unless-stopped
     environment:
-      POSTGRES_USER: "${PG_USER}"
-      POSTGRES_PASSWORD: "${PG_PASSWORD}"
-      POSTGRES_DB: "${PG_DB}"
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DB}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB}" ]
       interval: 10s
@@ -28,17 +31,24 @@ services:
         limits:
           cpus: "0.5"
           memory: 1G
+    networks:
+      dev_network:
+        aliases:
+          - ${PG_HOST}
 
-#  advertisements:
-#    build: ./advs
-#    command: gunicorn adv.wsgi:adv -b 0.0.0.0:5000
-#    container_name: advertisements
-#    ports:
-#      - "5000:5000"
-#    depends_on:
-#      - postgresql
-#    env_file:
-#      - ./.env
+
+  advertisements:
+    build: ./advs
+    container_name: advertisements
+    ports:
+      - "5001:5000"
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+    networks:
+      dev_network:
+
 
 #  web:
 #    build: ./nginx

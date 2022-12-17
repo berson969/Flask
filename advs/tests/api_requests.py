@@ -3,8 +3,9 @@ from typing import Literal
 from urllib.parse import urljoin
 
 import requests
-from advs.errors import ApiError
-from advs.tests.config import API_URL
+
+from errors import ApiError
+from tests.config import API_URL
 
 session = requests.Session()
 
@@ -25,27 +26,29 @@ def register(email: str, password: str) -> int:
     return base_request("post", "users", json={"email": email, "password": password})["id"]
 
 
-def login(email: str, password: str) -> str:
-    return base_request("post", "login", json={"email": email, "password": password})["password"]
+def login(email: str, password: str) -> dict:
+    return base_request("post", "login", json={"email": email, "password": password})
+
+
+def logout(email: str, password: str) -> str:
+    return base_request("post", "logout", json={"email": email, "password": password})["status"]
 
 
 def get_user(user_id: int) -> dict:
     return base_request("get", f"users/{user_id}")
 
 
-# def delete_user(user_id: int) -> bool:
-#     return base_request("delete", f"users/{user_id}")["deleted"]
+def post_adv(title: str, description: str) -> dict:
+    return base_request("post", "adv", json={"title": title, "description": description})
 
 
-# def logout(email: str, password: str) -> str:
-#     return base_request("post", "login", json={"email": email, "password": password})["password"]
+def get_adv(adv_id: int) -> dict:
+    return base_request("get", f"adv/{adv_id}")
 
-# def post_adv(id: int, title: str, description: str = None, token: str = None) -> dict:
-#     params = {key: value for key, value in (("title", title), ("description", description)) if value is not None}
-#     return base_request("post", f"adv}", json=params)
-#
-# def patch_adv(id: int, email: str, password: str = None, current_user.id) -> dict:
-#     params = {key: value for key, value in (("email", email), ("password", password)) if value is not None}
-#     return base_request("patch", f"users/id}", json=params, headers={"token": token})
-#
-#
+
+def patch_adv(adv_id: int, new_description: str) -> dict:
+    return base_request("patch", f"adv/{adv_id}", json={"description": new_description})
+
+
+def delete_adv(adv_id: int) -> str:
+    return base_request("delete", f"adv/{adv_id}")["status"]

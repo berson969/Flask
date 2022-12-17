@@ -2,9 +2,9 @@ import secrets
 import time
 import pytest
 
-from advs.validate import hash_password
-from advs.models import Base, User, get_engine, get_session_maker
-from advs.tests.config import ROOT_USER_EMAIL, ROOT_USER_PASSWORD
+from validate import hash_password
+from models import Base, User, get_engine, get_session_maker, Advertisement
+from tests.config import ROOT_USER_EMAIL, ROOT_USER_PASSWORD
 
 
 def get_random_password():
@@ -44,3 +44,26 @@ def create_user(email: str = None, password: str = None):
 @pytest.fixture()
 def new_user():
     return create_user()
+
+
+def create_adv(user: dict, title: str = None, description: str = None):
+    title = title or f"advertisement{time.time()}"
+    description = description or f"description{time.time()}"
+    Session = get_session_maker()
+    with Session() as session:
+        new_adv = Advertisement(title=title, description=description, user_id=user['id'])
+        session.add(new_adv)
+        session.commit()
+        return {
+            "id": new_adv.id,
+            "title": new_adv.title,
+            "description": new_adv.description,
+            "user_id": new_adv.user_id,
+            "email": user['email'],
+            "password": user['password']
+        }
+
+
+@pytest.fixture()
+def new_adv(new_user):
+    return create_adv(new_user)

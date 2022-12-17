@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy_utils import EmailType
 
-import advs.config
+import config
 
 Base = declarative_base()
 
@@ -41,7 +41,7 @@ class Advertisement(Base):
 
 @cached({})
 def get_engine():
-    return create_engine(advs.config.PG_DSN)
+    return create_engine(config.PG_DSN)
 
 
 @cached({})
