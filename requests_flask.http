@@ -63,3 +63,5 @@ Content-Type: application/json
 
 # удаление обьявления
 DELETE {{baseUrl}}/adv/2
+
+

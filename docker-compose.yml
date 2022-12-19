@@ -3,11 +3,8 @@ version: "3.9"
 volumes:
   pgdata:
 
-networks:
-      dev_network:
-
 services:
-  postgres:
+  db:
     image: postgres:15.1-alpine
     container_name: flask_db
     ports:
@@ -31,33 +28,44 @@ services:
         limits:
           cpus: "0.5"
           memory: 1G
-    networks:
-      dev_network:
-        aliases:
-          - ${PG_HOST}
-
 
   advertisements:
-    build: ./advs
+    build:
+      context: ./advs
+      dockerfile: Dockerfile
     container_name: advertisements
     ports:
       - "5001:5000"
+    environment:
+      PG_USER: ${PG_USER}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_HOST: ${PG_HOST}
+      PG_PORT: ${PG_PORT}
+      PG_DB: ${PG_DB}
+      WAIT_HOSTS: ${PG_HOST}:${PG_PORT}
     depends_on:
-      - postgres
+      - db
     env_file:
       - ./.env
-    networks:
-      dev_network:
 
-
-#  web:
-#    build: ./nginx
-#    container_name: nginx
-#    ports:
-#      - "80:80"
-#    depends_on:
-#      - postgresql
-#      - advertisements
-#    environment:
-#      - NGINX_HOST=127.0.0.1
-#      - NGINX_PORT=80
+  tests:
+      build:
+        context: ./advs
+        dockerfile: Dockerfile.tests
+      container_name: tests
+      environment:
+        API_URL: ${API_URL}
+        PG_USER: ${PG_USER}
+        PG_PASSWORD: ${PG_PASSWORD}
+        PG_HOST: ${PG_HOST}
+        PG_PORT: ${PG_PORT}
+        PG_DB: ${PG_DB}
+      ports:
+        - "5000:5000"
+      depends_on:
+        - db
+        - advertisements
+      working_dir: /advs
+      entrypoint: pytest -v -s
+      volumes:
+        - ./advs/:/advs
