@@ -1,5 +1,8 @@
 version: "3.9"
 
+networks:
+  dev_network:
+
 volumes:
   pgdata:
 
@@ -28,6 +31,10 @@ services:
         limits:
           cpus: "0.5"
           memory: 1G
+    networks:
+      dev_network:
+        aliases:
+          - ${PG_HOST}
 
   advertisements:
     build:
@@ -35,7 +42,7 @@ services:
       dockerfile: Dockerfile
     container_name: advertisements
     ports:
-      - "5001:5000"
+      - "5001:5001"
     environment:
       PG_USER: ${PG_USER}
       PG_PASSWORD: ${PG_PASSWORD}
@@ -47,6 +54,10 @@ services:
       - db
     env_file:
       - ./.env
+    volumes:
+      - ./advs/:/advs
+    networks:
+      dev_network:
 
   tests:
       build:
@@ -60,12 +71,12 @@ services:
         PG_HOST: ${PG_HOST}
         PG_PORT: ${PG_PORT}
         PG_DB: ${PG_DB}
-      ports:
-        - "5000:5000"
       depends_on:
         - db
         - advertisements
       working_dir: /advs
-      entrypoint: pytest -v -s
+      entrypoint: pytest
       volumes:
         - ./advs/:/advs
+      networks:
+        dev_network:

@@ -1,4 +1,4 @@
 #!/bin/sh
-cd /src/advs && gunicorn main:adv -b 0.0.0.0:5001  --workers=3 --capture-output
+gunicorn main:adv -b 0.0.0.0:5001  --workers=3 --capture-output
 
 #--forwarded-allow-ips="*"

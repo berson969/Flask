@@ -1,6 +1,7 @@
 # примеры API-запросов
 
-@baseUrl = http://127.0.0.1:5001
+#@baseUrl = http://127.0.0.1:5001
+@baseUrl = http://0.0.0.0:5001
 
 # создание пользователя
 POST {{baseUrl}}/users/
